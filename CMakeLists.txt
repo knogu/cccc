@@ -3,4 +3,9 @@ project(cccc C)
 
 set(CMAKE_C_STANDARD 17)
 
-add_executable(cccc main.c)
+add_executable(cccc main.c
+        common.h
+        tokenizer.c
+        parse.c
+        codegen.c
+        common.c)
