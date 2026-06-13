@@ -34,6 +34,7 @@ typedef struct Node Node;
 
 struct Node {
     NodeKind kind;
+    Node *next;
     Node *lhs;
     Node *rhs;
     int val;
@@ -43,5 +44,5 @@ void error(char *fmt, ...);
 void error_at(char *loc, char *fmt, ...);
 
 Token *tokenize();
-Node *expr();
-void gen(Node *node);
+Node *program();
+void codegen(Node *node);
