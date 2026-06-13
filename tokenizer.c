@@ -26,6 +26,13 @@ bool is_alnum(char c) {
     return is_alpha(c) || ('0' <= c && c <= '9');;
 }
 
+char *strndup_(char *p, int len) {
+    char *buf = malloc(len + 1);
+    strncpy(buf, p, len);
+    buf[len] = '\0';
+    return buf;
+}
+
 Token *tokenize() {
     char *p = user_input;
     Token head;
@@ -56,8 +63,10 @@ Token *tokenize() {
             continue;
         }
 
-        if ('a' <= *p && *p <= 'z') {
-            cur = new_token(TK_IDENT, cur, p++, 1);
+        if (is_alpha(*p)) {
+            char *q = p++;
+            while (is_alnum(*p)) p++;
+            cur = new_token(TK_IDENT, cur, q, p - q);
             continue;
         }
 

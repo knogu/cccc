@@ -3,9 +3,8 @@
 #include "common.h"
 
 void gen_addr(Node *node) {
-    if (node->kind == ND_LVAR) {
-        int offset = (node->name - 'a' + 1) * 8;
-        printf("  lea rax, [rbp-%d]\n", offset);
+    if (node->kind == ND_VAR) {
+        printf("  lea rax, [rbp-%d]\n", node->var->offset);
         printf("  push rax\n");
         return;
     }
@@ -37,7 +36,7 @@ void gen(Node *node) {
             gen(node->lhs);
             printf("  add rsp, 8\n");
             return;
-        case ND_LVAR:
+        case ND_VAR:
             gen_addr(node); // node has the address
             load();
             return;
@@ -98,17 +97,17 @@ void gen(Node *node) {
     printf("  push rax\n");
 }
 
-void codegen(Node *node) {
+void codegen(Program *program) {
     printf(".intel_syntax noprefix\n");
     printf(".globl main\n");
     printf("main:\n");
 
     printf("  push rbp\n");
     printf("  mov rbp, rsp\n");
-    printf("  sub rsp, 208\n");
+    printf("  sub rsp, %d\n", program->stack_size);
 
-    for (Node *n = node; n; n = n->next) {
-        gen(n);
+    for (Node *node = program->node; node; node = node->next) {
+        gen(node);
     }
 
     printf(".Lreturn:\n");

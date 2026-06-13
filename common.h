@@ -19,6 +19,13 @@ char *user_input;
 
 Token *token;
 
+typedef struct Var Var;
+struct Var {
+    Var *next;
+    char *name;
+    int offset;
+};
+
 typedef enum {
     ND_ADD,
     ND_SUB,
@@ -31,7 +38,7 @@ typedef enum {
     ND_ASSIGN,
     ND_RETURN,
     ND_EXPR_STMT,
-    ND_LVAR,
+    ND_VAR,
     ND_NUM,
 } NodeKind;
 
@@ -42,9 +49,15 @@ struct Node {
     Node *next;
     Node *lhs;
     Node *rhs;
-    char name;
+    Var *var;
     int val;
 };
+
+typedef struct {
+    Node *node;
+    Var *locals;
+    int stack_size;
+} Program;
 
 Token *consume_ident();
 
@@ -52,5 +65,6 @@ void error(char *fmt, ...);
 void error_at(char *loc, char *fmt, ...);
 
 Token *tokenize();
-Node *program();
-void codegen(Node *node);
+Program *program();
+void codegen(Program *program);
+char *strndup_(char *p, int len);
