@@ -1,10 +1,12 @@
 #!/bin/bash
+set -xu
+
 assert() {
   expected="$1"
   input="$2"
 
 
-  ~/cccc/main "$input" > tmp.s
+  ~/cccc/cmake-build-debug/cccc "$input" > tmp.s
   scp ./tmp.s "$user@$host":~/
   ssh "$user@$host" 'cc -o tmp tmp.s && ./tmp'
   actual="$?"
@@ -17,6 +19,11 @@ assert() {
   fi
 }
 
+cmake --build cmake-build-debug
+
+assert 47 '5+6*7'
+assert 15 '5*(9-6)'
+assert 4 '(3+5)/2'
 assert 0 0
 assert 42 42
 assert 21 "5+20-4"
