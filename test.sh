@@ -21,6 +21,9 @@ assert() {
 
 cmake --build cmake-build-debug
 
+assert 3 'a=3; return a;'
+assert 8 'a=3; z=5; return a+z;'
+
 assert 0 'return 0;'
 assert 42 'return 42;'
 assert 21 'return 5+20-4;'
