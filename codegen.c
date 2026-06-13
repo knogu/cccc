@@ -30,6 +30,7 @@ void store() {
 }
 
 void gen(Node *node) {
+    int seq = labelseq++;
     switch (node->kind) {
         case ND_NUM:
             printf("  push %d\n", node->val);
@@ -48,7 +49,6 @@ void gen(Node *node) {
             store();
             return;
         case ND_IF:
-            int seq = labelseq++;
             if (node->els) {
                 gen(node->cond);
                 printf("  pop rax\n");
@@ -67,6 +67,17 @@ void gen(Node *node) {
                 gen(node->then);
                 printf(".Lend%d:\n", seq);
             }
+            return;
+        case ND_WHILE:
+            seq = labelseq++;
+            printf(".Lbegin%d:\n", seq);
+            gen(node->cond);
+            printf("  pop rax\n");
+            printf("  cmp rax, 0\n");
+            printf("  je .Lend%d\n", seq);
+            gen(node->then);
+            printf("jmp .Lbegin%d\n", seq);
+            printf(".Lend%d:\n", seq);
             return;
         case ND_RETURN:
             gen(node->lhs);
