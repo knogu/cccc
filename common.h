@@ -40,6 +40,7 @@ typedef enum {
     ND_IF,
     ND_WHILE,
     ND_FOR,
+    ND_BLOCK,
     ND_EXPR_STMT,
     ND_VAR,
     ND_NUM,
@@ -62,6 +63,9 @@ struct Node {
     // for
     Node *init;
     Node *inc;
+
+    // Block
+    Node *body;
 
     Var *var;
     int val;
