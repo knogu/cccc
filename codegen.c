@@ -3,6 +3,7 @@
 #include "common.h"
 
 int labelseq = 0;
+char *funcname;
 
 void gen_addr(Node *node) {
     if (node->kind == ND_VAR) {
@@ -154,21 +155,24 @@ void gen(Node *node) {
     printf("  push rax\n");
 }
 
-void codegen(Program *program) {
+void codegen(Function *program) {
     printf(".intel_syntax noprefix\n");
-    printf(".globl main\n");
-    printf("main:\n");
+    for (Function *fn = program; fn; fn = fn->next) {
+        printf(".global %s\n", fn->name);
+        printf("%s:\n", fn->name);
+        funcname = fn->name;
 
-    printf("  push rbp\n");
-    printf("  mov rbp, rsp\n");
-    printf("  sub rsp, %d\n", program->stack_size);
+        printf("  push rbp\n");
+        printf("  mov rbp, rsp\n");
+        printf("  sub rsp, %d\n", fn->stack_size);
 
-    for (Node *node = program->node; node; node = node->next) {
-        gen(node);
+        for (Node *node = fn->node; node; node = node->next) {
+            gen(node);
+        }
+
+        printf(".Lreturn.%s:\n", fn->name);
+        printf("  mov rsp, rbp\n");
+        printf("  pop rbp\n");
+        printf("  ret\n");
     }
-
-    printf(".Lreturn:\n");
-    printf("  mov rsp, rbp\n");
-    printf("  pop rbp\n");
-    printf("  ret\n");
 }

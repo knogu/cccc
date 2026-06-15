@@ -71,18 +71,22 @@ struct Node {
     int val;
 };
 
-typedef struct {
+typedef struct Function Function;
+struct Function {
+    Function *next;
+    char *name;
     Node *node;
     Var *locals;
     int stack_size;
-} Program;
+};
 
+char *expect_ident();
 Token *consume_ident();
 
 void error(char *fmt, ...);
 void error_at(char *loc, char *fmt, ...);
 
 Token *tokenize();
-Program *program();
-void codegen(Program *program);
+Function *program();
+void codegen(Function *program);
 char *strndup_(char *p, int len);
